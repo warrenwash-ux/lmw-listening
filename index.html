@@ -209,6 +209,25 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="admin-hint"><button onclick="goAdmin()">ADMIN</button></div>
 </div>
 
+
+<!-- ── SETUP PAGE ── -->
+<div class="page" id="page-setup">
+  <div class="wrap" style="justify-content:center;">
+    <div class="lock-wrap">
+      <div class="lock-icon-el">⚙️</div>
+      <div class="lock-title">ONE-TIME SETUP</div>
+      <div class="lock-sub">LAMB MUSIC WORKS ADMIN</div>
+      <p style="font-size:13px;color:var(--gray);line-height:1.7;margin-bottom:20px;">Paste your GitHub token below. This is saved privately in your browser and never shared. You only do this once per device.</p>
+      <div class="field" style="margin-bottom:14px;">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="setupToken" placeholder="ghp_..." style="background:var(--dark2);border:1px solid rgba(201,168,76,.2);border-radius:10px;padding:13px 14px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;width:100%;outline:none;letter-spacing:1px;" />
+      </div>
+      <button class="btn btn-gold" onclick="saveSetupToken()">SAVE & CONTINUE</button>
+      <p style="font-size:11px;color:#333;text-align:center;margin-top:10px;line-height:1.6;">Token stays on this device only.<br>Never transmitted except to GitHub.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ── LOCK PAGE ── -->
 <div class="page" id="page-lock">
   <div class="wrap" style="justify-content:center;">
@@ -361,8 +380,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="card">
         <div class="card-title">Sync</div>
-        <p style="font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.6;">All data syncs to your private GitHub repo automatically. Changes you make here are saved across all your devices instantly.</p>
-        <button class="btn btn-outline" onclick="forceSyncFromGitHub()">REFRESH FROM GITHUB</button>
+        <p style="font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.6;">All data syncs to your GitHub repo automatically — works across all your devices.</p>
+        <button class="btn btn-outline" onclick="forceSyncFromGitHub()" style="margin-bottom:10px;">REFRESH FROM GITHUB</button>
+        <div class="field" style="margin-top:4px;">
+          <label>Update GitHub Token</label>
+          <input type="password" id="newTokenInput" placeholder="Paste new token if expired..." />
+        </div>
+        <button class="btn btn-outline" onclick="updateToken()">SAVE NEW TOKEN</button>
       </div>
       <div class="card">
         <div class="card-title">Session</div>
@@ -394,6 +418,7 @@ const GH = {
 let ghSha = null;
 
 async function ghRead() {
+  GH.token = localStorage.getItem('lmw_gh_token') || GH.token;
   try {
     const r = await fetch(`https://api.github.com/repos/${GH.repo}/contents/${GH.file}?ref=${GH.branch}&t=${Date.now()}`, {
       headers: { 'Authorization': `token ${GH.token}`, 'Accept': 'application/vnd.github.v3+json' }
@@ -505,12 +530,27 @@ function checkPin() {
     localStorage.setItem('lmw_admin_auth', 'true');
     document.getElementById('lockInput').value = '';
     document.getElementById('lockErr').style.display = 'none';
-    showPage('admin');
-    ghRead().then(d => { sessions = d; renderSessionsList(); });
+    // Check if GitHub token is saved
+    if (!localStorage.getItem('lmw_gh_token')) {
+      showPage('setup');
+    } else {
+      showPage('admin');
+      ghRead().then(d => { sessions = d; renderSessionsList(); });
+    }
   } else {
     document.getElementById('lockErr').style.display = 'block';
     document.getElementById('lockInput').value = '';
   }
+}
+
+function saveSetupToken() {
+  const t = document.getElementById('setupToken').value.trim();
+  if (!t || t.length < 20) { showToast('Please paste your GitHub token'); return; }
+  localStorage.setItem('lmw_gh_token', t);
+  GH.token = t;
+  showToast('Token saved ✓');
+  showPage('admin');
+  ghRead().then(d => { sessions = d; renderSessionsList(); });
 }
 
 function logout() {
@@ -530,6 +570,15 @@ function changePin() {
   localStorage.setItem('lmw_pin', nw);
   ['s-old','s-new','s-confirm'].forEach(id => document.getElementById(id).value = '');
   showToast('PIN updated ✓');
+}
+
+function updateToken() {
+  const t = document.getElementById('newTokenInput').value.trim();
+  if (!t || t.length < 20) { showToast('Please paste a valid token'); return; }
+  localStorage.setItem('lmw_gh_token', t);
+  GH.token = t;
+  document.getElementById('newTokenInput').value = '';
+  showToast('Token updated ✓');
 }
 
 // ═══════════════════════════════════════════════════════
