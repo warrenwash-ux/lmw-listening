@@ -362,7 +362,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
         <div class="card-title">Playlist — Add Your Tracks</div>
         <div id="trackList"></div>
         <button class="add-track-btn" onclick="addTrackRow()">+ ADD TRACK</button>
-        <div class="hint">💡 Paste any Google Drive share link and tap <b>CONVERT</b> — it auto-converts for you.<br><br>Make sure each file is set to <b>"Anyone with the link can view"</b> in Google Drive.</div>
+        <div class="hint">💡 Tap <b>⬆ UPLOAD</b> next to each track to upload directly from your iPhone or PC. Supports MP3, M4A, WAV, AAC.<br><br>Files upload to your private GitHub repo and the URL fills in automatically.</div>
       </div>
       <div class="card">
         <div class="card-title">Access Controls</div>
@@ -633,8 +633,9 @@ function addTrackRow() {
     <div class="track-fields">
       <input type="text" placeholder="Track title" id="tt-${n}" />
       <div style="display:flex;gap:6px;align-items:center;">
-        <input type="url" placeholder="Paste any Google Drive link" id="tu-${n}" oninput="autoConvertUrl(${n})" style="flex:1;" />
-        <button onclick="autoConvertUrl(${n})" title="Convert link" style="height:38px;padding:0 10px;background:rgba(201,168,76,.15);border:1px solid var(--gold-dark);border-radius:6px;color:var(--gold);font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;flex-shrink:0;">CONVERT</button>
+        <input type="url" placeholder="URL (auto-filled after upload)" id="tu-${n}" style="flex:1;font-size:12px;" />
+        <label for="fa-${n}" title="Upload audio" style="height:38px;padding:0 10px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:6px;color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px;">⬆ UPLOAD</label>
+        <input type="file" id="fa-${n}" accept="audio/*,.mp3,.wav,.m4a,.aac,.flac,.ogg" style="display:none;" onchange="uploadAudioFile(${n}, this)" />
       </div>
       <div id="tu-status-${n}" style="font-size:11px;min-height:16px;margin-top:2px;"></div>
     </div>
@@ -809,7 +810,7 @@ function editSession(){
     const n=trackRowCount;
     const div=document.createElement("div");
     div.className="track-row";div.id=`tr-${n}`;
-    div.innerHTML=`<div class="track-num">${n}</div><div class="track-fields"><input type="text" placeholder="Track title" id="tt-${n}" value="${esc(t.title)}"/><div style="display:flex;gap:6px;align-items:center;"><input type="url" placeholder="Paste any Google Drive link" id="tu-${n}" value="${esc(t.url)}" oninput="autoConvertUrl(${n})" style="flex:1;"/><button onclick="autoConvertUrl(${n})" title="Convert link" style="height:38px;padding:0 10px;background:rgba(201,168,76,.15);border:1px solid var(--gold-dark);border-radius:6px;color:var(--gold);font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;flex-shrink:0;">CONVERT</button></div><div id="tu-status-${n}" style="font-size:11px;min-height:16px;margin-top:2px;"></div></div><button class="track-remove" onclick="removeTrackRow(${n})" title="Remove">✕</button>`;
+    div.innerHTML=`<div class="track-num">${n}</div><div class="track-fields"><input type="text" placeholder="Track title" id="tt-${n}" value="${esc(t.title)}"/><div style="display:flex;gap:6px;align-items:center;"><input type="url" placeholder="URL (auto-filled after upload)" id="tu-${n}" value="${esc(t.url)}" style="flex:1;font-size:12px;"/><label for="fa-${n}" title="Upload audio" style="height:38px;padding:0 10px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:6px;color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px;">⬆ UPLOAD</label><input type="file" id="fa-${n}" accept="audio/*,.mp3,.wav,.m4a,.aac,.flac,.ogg" style="display:none;" onchange="uploadAudioFile(${n}, this)"/></div><div id="tu-status-${n}" style="font-size:11px;min-height:16px;margin-top:2px;"></div></div><button class="track-remove" onclick="removeTrackRow(${n})" title="Remove">✕</button>`;
     document.getElementById("trackList").appendChild(div);
   });
   adminTab("create");window.scrollTo({top:0,behavior:"smooth"});
@@ -1098,51 +1099,101 @@ function showEndScreen(s) {
 
 
 // ═══════════════════════════════════════
-// GOOGLE DRIVE LINK CONVERTER
+// AUDIO UPLOAD TO GITHUB
 // ═══════════════════════════════════════
-function extractDriveId(url) {
-  // formats:
-  // drive.google.com/file/d/FILE_ID/view
-  // drive.google.com/open?id=FILE_ID
-  // docs.google.com/... (less common)
-  // drive.google.com/uc?id=FILE_ID
-  // youtu.be or other — not drive
-  const patterns = [
-    /\/file\/d\/([a-zA-Z0-9_-]{10,})/,
-    /[?&]id=([a-zA-Z0-9_-]{10,})/,
-    /\/d\/([a-zA-Z0-9_-]{10,})\//,
-  ];
-  for (const p of patterns) {
-    const m = url.match(p);
-    if (m) return m[1];
-  }
-  return null;
-}
-
-function autoConvertUrl(n) {
-  const input = document.getElementById(`tu-${n}`);
+async function uploadAudioFile(n, input) {
+  const file = input.files[0];
+  if (!file) return;
   const status = document.getElementById(`tu-status-${n}`);
-  if (!input || !status) return;
-  const raw = input.value.trim();
-  if (!raw) { status.textContent = ""; return; }
+  const urlInput = document.getElementById(`tu-${n}`);
+  const token = localStorage.getItem("lmw_gh_token") || GH.token;
 
-  // Already converted
-  if (raw.includes("uc?export=download&id=")) {
-    status.style.color = "var(--green)";
-    status.textContent = "✓ Link ready";
+  if (!token) {
+    status.style.color = "var(--red)";
+    status.textContent = "⚠ No GitHub token found — go to Settings and save your token first";
     return;
   }
 
-  const id = extractDriveId(raw);
-  if (id) {
-    const converted = `https://drive.google.com/uc?export=download&id=${id}`;
-    input.value = converted;
-    status.style.color = "var(--green)";
-    status.textContent = "✓ Converted — ready to use";
-  } else if (raw.length > 10) {
+  // File size check — GitHub has 100MB limit, warn over 50MB
+  const mb = file.size / 1024 / 1024;
+  if (mb > 100) {
     status.style.color = "var(--red)";
-    status.textContent = "⚠ Couldn't detect Drive ID — paste the full share link";
+    status.textContent = "⚠ File too large (max 100MB). Compress your audio first.";
+    return;
   }
+
+  status.style.color = "var(--gold)";
+  status.textContent = `⏳ Uploading ${file.name} (${mb.toFixed(1)}MB)...`;
+  urlInput.value = "";
+
+  try {
+    // Read file as base64
+    const b64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result.split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    // Clean filename — remove spaces and special chars
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const ghPath = `audio/${safeName}`;
+
+    // Check if file already exists (get SHA)
+    let existingSha = null;
+    try {
+      const check = await fetch(`https://api.github.com/repos/${GH.repo}/contents/${ghPath}`, {
+        headers: { "Authorization": `token ${token}` }
+      });
+      if (check.ok) {
+        const d = await check.json();
+        existingSha = d.sha;
+      }
+    } catch(e) {}
+
+    // Upload to GitHub
+    const body = {
+      message: `Upload audio: ${safeName}`,
+      content: b64,
+      branch: GH.branch
+    };
+    if (existingSha) body.sha = existingSha;
+
+    const res = await fetch(`https://api.github.com/repos/${GH.repo}/contents/${ghPath}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || "Upload failed");
+    }
+
+    const result = await res.json();
+    // Use raw GitHub URL for direct streaming
+    const rawUrl = `https://raw.githubusercontent.com/${GH.repo}/${GH.branch}/${ghPath}`;
+    urlInput.value = rawUrl;
+    status.style.color = "var(--green)";
+    status.textContent = `✓ Uploaded — ${file.name}`;
+
+    // Auto-fill title if empty
+    const titleInput = document.getElementById(`tt-${n}`);
+    if (titleInput && !titleInput.value.trim()) {
+      titleInput.value = file.name.replace(/\.[^.]+$/, "").replace(/[_-]/g, " ");
+    }
+
+  } catch(e) {
+    status.style.color = "var(--red)";
+    status.textContent = `⚠ Upload failed: ${e.message}`;
+    console.error(e);
+  }
+
+  // Reset file input so same file can be re-selected
+  input.value = "";
 }
 
 // ═══════════════════════════════════════
