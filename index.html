@@ -362,7 +362,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
         <div class="card-title">Playlist — Add Your Tracks</div>
         <div id="trackList"></div>
         <button class="add-track-btn" onclick="addTrackRow()">+ ADD TRACK</button>
-        <div class="hint">💡 Convert each Google Drive link:<br><b>drive.google.com/file/d/FILE_ID/view</b><br>→ <b>drive.google.com/uc?export=download&amp;id=FILE_ID</b><br><br>Set each file to <b>"Anyone with the link can view"</b></div>
+        <div class="hint">💡 Paste any Google Drive share link and tap <b>CONVERT</b> — it auto-converts for you.<br><br>Make sure each file is set to <b>"Anyone with the link can view"</b> in Google Drive.</div>
       </div>
       <div class="card">
         <div class="card-title">Access Controls</div>
@@ -632,7 +632,11 @@ function addTrackRow() {
     <div class="track-num">${n}</div>
     <div class="track-fields">
       <input type="text" placeholder="Track title" id="tt-${n}" />
-      <input type="url" placeholder="Google Drive URL (uc?export=download&id=...)" id="tu-${n}" />
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="url" placeholder="Paste any Google Drive link" id="tu-${n}" oninput="autoConvertUrl(${n})" style="flex:1;" />
+        <button onclick="autoConvertUrl(${n})" title="Convert link" style="height:38px;padding:0 10px;background:rgba(201,168,76,.15);border:1px solid var(--gold-dark);border-radius:6px;color:var(--gold);font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;flex-shrink:0;">CONVERT</button>
+      </div>
+      <div id="tu-status-${n}" style="font-size:11px;min-height:16px;margin-top:2px;"></div>
     </div>
     <button class="track-remove" onclick="removeTrackRow(${n})" title="Remove">✕</button>`;
   document.getElementById("trackList").appendChild(div);
@@ -805,7 +809,7 @@ function editSession(){
     const n=trackRowCount;
     const div=document.createElement("div");
     div.className="track-row";div.id=`tr-${n}`;
-    div.innerHTML=`<div class="track-num">${n}</div><div class="track-fields"><input type="text" placeholder="Track title" id="tt-${n}" value="${esc(t.title)}"/><input type="url" placeholder="Google Drive URL" id="tu-${n}" value="${esc(t.url)}"/></div><button class="track-remove" onclick="removeTrackRow(${n})" title="Remove">✕</button>`;
+    div.innerHTML=`<div class="track-num">${n}</div><div class="track-fields"><input type="text" placeholder="Track title" id="tt-${n}" value="${esc(t.title)}"/><div style="display:flex;gap:6px;align-items:center;"><input type="url" placeholder="Paste any Google Drive link" id="tu-${n}" value="${esc(t.url)}" oninput="autoConvertUrl(${n})" style="flex:1;"/><button onclick="autoConvertUrl(${n})" title="Convert link" style="height:38px;padding:0 10px;background:rgba(201,168,76,.15);border:1px solid var(--gold-dark);border-radius:6px;color:var(--gold);font-size:11px;letter-spacing:1px;cursor:pointer;white-space:nowrap;flex-shrink:0;">CONVERT</button></div><div id="tu-status-${n}" style="font-size:11px;min-height:16px;margin-top:2px;"></div></div><button class="track-remove" onclick="removeTrackRow(${n})" title="Remove">✕</button>`;
     document.getElementById("trackList").appendChild(div);
   });
   adminTab("create");window.scrollTo({top:0,behavior:"smooth"});
@@ -1090,6 +1094,55 @@ function showEndScreen(s) {
       </div>
       <button class="replay-btn" onclick="renderListener()">↩ REPLAY PLAYLIST</button>
     </div>`;
+}
+
+
+// ═══════════════════════════════════════
+// GOOGLE DRIVE LINK CONVERTER
+// ═══════════════════════════════════════
+function extractDriveId(url) {
+  // formats:
+  // drive.google.com/file/d/FILE_ID/view
+  // drive.google.com/open?id=FILE_ID
+  // docs.google.com/... (less common)
+  // drive.google.com/uc?id=FILE_ID
+  // youtu.be or other — not drive
+  const patterns = [
+    /\/file\/d\/([a-zA-Z0-9_-]{10,})/,
+    /[?&]id=([a-zA-Z0-9_-]{10,})/,
+    /\/d\/([a-zA-Z0-9_-]{10,})\//,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function autoConvertUrl(n) {
+  const input = document.getElementById(`tu-${n}`);
+  const status = document.getElementById(`tu-status-${n}`);
+  if (!input || !status) return;
+  const raw = input.value.trim();
+  if (!raw) { status.textContent = ""; return; }
+
+  // Already converted
+  if (raw.includes("uc?export=download&id=")) {
+    status.style.color = "var(--green)";
+    status.textContent = "✓ Link ready";
+    return;
+  }
+
+  const id = extractDriveId(raw);
+  if (id) {
+    const converted = `https://drive.google.com/uc?export=download&id=${id}`;
+    input.value = converted;
+    status.style.color = "var(--green)";
+    status.textContent = "✓ Converted — ready to use";
+  } else if (raw.length > 10) {
+    status.style.color = "var(--red)";
+    status.textContent = "⚠ Couldn't detect Drive ID — paste the full share link";
+  }
 }
 
 // ═══════════════════════════════════════
