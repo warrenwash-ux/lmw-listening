@@ -1,5 +1,27 @@
 [
   {
+    "id": "sess_1780366607624",
+    "name": "Yo-Yo Yolanda Whitaker",
+    "artist": "Yo-Yo/Yolanda",
+    "tracks": [
+      {
+        "title": "Yo-Yo Fearless",
+        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/YoYo_Fearless___YoYo_Flawless.mp3"
+      },
+      {
+        "title": "They Call Me Yo-Yo but, Tonight I'm Yolanda",
+        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/They_Call_Me_YoYo_But_Tonight_I_m_Yolanda.mp3"
+      }
+    ],
+    "message": "I love your music. I love your style. It would be my pleasure to ghostwrite and produce music for you",
+    "contact": "warren@lambmusicworks.com / 951-370-9519",
+    "website": "https://lambmusicworks.com",
+    "active": true,
+    "expiry": "2026-06-03T01:00",
+    "createdAt": "2026-06-02T02:16:47.624Z",
+    "log": []
+  },
+  {
     "id": "sess_1780365041504",
     "name": "Warren Wash",
     "artist": "Zairey",
@@ -48,7 +70,7 @@
         "url": "https://drive.google.com/uc?export=download&id=12SL_wO8DxJ7iaCF9isfSiwOybTIqnfqR"
       }
     ],
-    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ I'd love to create something together.",
+    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ I'd love to create something together.",
     "contact": "warren@lambmusicworks.com",
     "website": "https://lambmusicworks.com",
     "active": true,
