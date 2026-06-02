@@ -1,5 +1,23 @@
 [
   {
+    "id": "sess_1780392974084",
+    "name": "warren washington",
+    "artist": "Zaire",
+    "tracks": [
+      {
+        "title": "Yo Yo Jumpin Out the Window",
+        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/Yo-Yo_Jumpin_Out_the_Window.mp3"
+      }
+    ],
+    "message": "Test",
+    "contact": "warren@lambmusicworks.com",
+    "website": "https://lambmusicworks.com",
+    "active": true,
+    "expiry": null,
+    "createdAt": "2026-06-02T09:36:14.084Z",
+    "log": []
+  },
+  {
     "id": "sess_1780374158488",
     "name": "Ari",
     "artist": "Zairey",
@@ -96,7 +114,7 @@
         "url": "https://drive.google.com/uc?export=download&id=12SL_wO8DxJ7iaCF9isfSiwOybTIqnfqR"
       }
     ],
-    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ I'd love to create something together.",
+    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ I'd love to create something together.",
     "contact": "warren@lambmusicworks.com",
     "website": "https://lambmusicworks.com",
     "active": true,
