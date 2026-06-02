@@ -15,7 +15,13 @@
     "active": true,
     "expiry": "",
     "createdAt": "2026-06-02T01:50:41.504Z",
-    "log": []
+    "log": [
+      {
+        "type": "open",
+        "ts": "2026-06-02T01:51:29.416Z",
+        "track": null
+      }
+    ]
   },
   {
     "id": "sess_1780353652787",
@@ -27,7 +33,7 @@
         "url": "https://drive.google.com/uc?export=download&id=12SL_wO8DxJ7iaCF9isfSiwOybTIqnfqR"
       }
     ],
-    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out Ã¢ÂÂ I'd love to create something together.",
+    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂ¢ÃÂÃÂ I'd love to create something together.",
     "contact": "warren@lambmusicworks.com",
     "website": "https://lambmusicworks.com",
     "active": true,
