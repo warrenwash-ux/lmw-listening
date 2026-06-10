@@ -22,45 +22,6 @@
     "log": []
   },
   {
-    "id": "sess_1780365041504",
-    "name": "Warren Wash",
-    "artist": "Zairey",
-    "tracks": [
-      {
-        "title": "They Call Me Yo-Yo",
-        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/They_Call_Me_YoYo_But_Tonight_I_m_Yolanda.mp3"
-      }
-    ],
-    "message": "Test",
-    "contact": "warrenwash@gmail.com",
-    "website": "https://lambmusicworks.com",
-    "active": true,
-    "expiry": "",
-    "createdAt": "2026-06-02T01:50:41.504Z",
-    "log": [
-      {
-        "type": "open",
-        "ts": "2026-06-02T01:51:29.416Z",
-        "track": null
-      },
-      {
-        "type": "play",
-        "ts": "2026-06-02T01:51:29.999Z",
-        "track": 1
-      },
-      {
-        "type": "open",
-        "ts": "2026-06-02T01:56:52.345Z",
-        "track": null
-      },
-      {
-        "type": "play",
-        "ts": "2026-06-02T01:56:52.966Z",
-        "track": 1
-      }
-    ]
-  },
-  {
     "id": "sess_1780353652787",
     "name": "Zaire",
     "artist": "Zairey",
