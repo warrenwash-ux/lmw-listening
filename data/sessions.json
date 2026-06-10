@@ -20,54 +20,5 @@
     "expiry": "2026-06-03T01:00",
     "createdAt": "2026-06-02T02:16:47.624Z",
     "log": []
-  },
-  {
-    "id": "sess_1780353652787",
-    "name": "Zaire",
-    "artist": "Zairey",
-    "tracks": [
-      {
-        "title": "They call me Yo-Yo",
-        "url": "https://drive.google.com/uc?export=download&id=12SL_wO8DxJ7iaCF9isfSiwOybTIqnfqR"
-      }
-    ],
-    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ I'd love to create something together.",
-    "contact": "warren@lambmusicworks.com",
-    "website": "https://lambmusicworks.com",
-    "active": true,
-    "expiry": null,
-    "createdAt": "2026-06-01T22:40:52.787Z",
-    "log": [
-      {
-        "type": "open",
-        "ts": "2026-06-01T22:41:38.563Z",
-        "track": null
-      },
-      {
-        "type": "open",
-        "ts": "2026-06-01T22:41:40.495Z",
-        "track": null
-      },
-      {
-        "type": "open",
-        "ts": "2026-06-01T22:41:52.085Z",
-        "track": null
-      },
-      {
-        "type": "open",
-        "ts": "2026-06-01T22:41:56.265Z",
-        "track": null
-      },
-      {
-        "type": "open",
-        "ts": "2026-06-01T22:42:01.917Z",
-        "track": null
-      },
-      {
-        "type": "open",
-        "ts": "2026-06-01T22:42:03.965Z",
-        "track": null
-      }
-    ]
   }
 ]
