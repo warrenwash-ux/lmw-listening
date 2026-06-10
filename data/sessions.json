@@ -18,32 +18,6 @@
     "log": []
   },
   {
-    "id": "sess_1780374158488",
-    "name": "Ari",
-    "artist": "Zairey",
-    "tracks": [
-      {
-        "title": "They Call Me Yo-Yo",
-        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/They_Call_Me_YoYo_But_Tonight_I_m_Yolanda.mp3"
-      },
-      {
-        "title": "Yo Yo Jumpin Out the Window (1)",
-        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/Yo-Yo_Jumpin_Out_the_Window__1_.mp3"
-      },
-      {
-        "title": "YoYo Fearless   YoYo Flawless",
-        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/YoYo_Fearless___YoYo_Flawless.mp3"
-      }
-    ],
-    "message": "My Music",
-    "contact": "ariginalmarketing@gmail.com",
-    "website": "https://lambmusicworks.com",
-    "active": true,
-    "expiry": null,
-    "createdAt": "2026-06-02T04:22:38.488Z",
-    "log": []
-  },
-  {
     "id": "sess_1780366607624",
     "name": "Yo-Yo Yolanda Whitaker",
     "artist": "Yo-Yo/Yolanda",
@@ -114,7 +88,7 @@
         "url": "https://drive.google.com/uc?export=download&id=12SL_wO8DxJ7iaCF9isfSiwOybTIqnfqR"
       }
     ],
-    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ I'd love to create something together.",
+    "message": "These songs were made with you in mind, Zaire. Each track was crafted specifically for this moment. If anything moves you, reach out ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ I'd love to create something together.",
     "contact": "warren@lambmusicworks.com",
     "website": "https://lambmusicworks.com",
     "active": true,
