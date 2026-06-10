@@ -1,23 +1,5 @@
 [
   {
-    "id": "sess_1780392974084",
-    "name": "warren washington",
-    "artist": "Zaire",
-    "tracks": [
-      {
-        "title": "Yo Yo Jumpin Out the Window",
-        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/Yo-Yo_Jumpin_Out_the_Window.mp3"
-      }
-    ],
-    "message": "Test",
-    "contact": "warren@lambmusicworks.com",
-    "website": "https://lambmusicworks.com",
-    "active": true,
-    "expiry": null,
-    "createdAt": "2026-06-02T09:36:14.084Z",
-    "log": []
-  },
-  {
     "id": "sess_1780366607624",
     "name": "Yo-Yo Yolanda Whitaker",
     "artist": "Yo-Yo/Yolanda",
