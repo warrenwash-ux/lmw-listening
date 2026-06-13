@@ -5,7 +5,7 @@
     "artist": "Zairey",
     "tracks": [
       {
-        "title": "They Call Me YoYo But Tonight I'm Yolanda",
+        "title": "They Call Me YoYo But, Tonight I'm Yolanda",
         "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/LANDR-They_Call_Me_YoYo_But_Tonight_I_m_Yolanda__1_-Open-High.mp3"
       },
       {
@@ -25,7 +25,7 @@
     "contact": "Leversrn@tmail.com",
     "website": "lambmusicworks.com",
     "active": true,
-    "expiry": null,
+    "expiry": "2026-06-14T18:16",
     "createdAt": "2026-06-12T17:21:45.185Z",
     "log": [
       {
