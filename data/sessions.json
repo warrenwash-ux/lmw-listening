@@ -27,6 +27,12 @@
     "active": true,
     "expiry": null,
     "createdAt": "2026-06-12T17:21:45.185Z",
-    "log": []
+    "log": [
+      {
+        "type": "open",
+        "ts": "2026-06-13T00:59:13.170Z",
+        "track": null
+      }
+    ]
   }
 ]
