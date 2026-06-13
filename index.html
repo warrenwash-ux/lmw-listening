@@ -514,10 +514,14 @@ window.addEventListener("load", async () => {
     }
   } else {
     showPage("listener");
+    // Always fetch from GitHub so sessions load on any device/browser
+    // Show a loading state first if we have a sessionId
     if (sessionId) {
-      sessions = await ghRead();
-      localStorage.setItem("lmw_sessions", JSON.stringify(sessions));
+      const ct = document.getElementById("listener-content");
+      ct.innerHTML = `<div class="status-screen"><div class="ss-icon">⏳</div><div class="ss-title">LOADING</div><div class="ss-body">Preparing your session...</div></div>`;
     }
+    sessions = await ghRead();
+    localStorage.setItem("lmw_sessions", JSON.stringify(sessions));
     renderListener();
   }
 });
@@ -980,9 +984,17 @@ function setupAudio(s, tracks) {
   const playBtn = document.getElementById("playBtn");
   const wv = document.getElementById("wv");
 
+  function driveUrl(url) {
+    // Convert Google Drive share links to direct streaming URLs
+    if (!url) return url;
+    const m = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (m) return `https://drive.google.com/uc?export=download&id=${m[1]}`;
+    return url;
+  }
+
   function loadTrack(idx) {
     currentTrackIdx = idx;
-    audio.src = tracks[idx].url;
+    audio.src = driveUrl(tracks[idx].url);
     audio.load();
     document.getElementById("npTitle").textContent = tracks[idx].title;
     document.getElementById("pf").style.width = "0%";
