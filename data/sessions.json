@@ -1,5 +1,35 @@
 [
   {
+    "id": "sess_1782694941295",
+    "name": "Yolanda Yo-Yo Whitaker",
+    "artist": "Warren Lamb",
+    "tracks": [
+      {
+        "title": "They Call Me YoYo But Tonight I’m Yolanda",
+        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/They_Call_Me_YoYo_But_Tonight_I_m_Yolanda.mp3"
+      },
+      {
+        "title": "YoYo Fearless & YoYo Flawless",
+        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/YoYo_Fearless___YoYo_Flawless.mp3"
+      },
+      {
+        "title": "Yo Yo Jumpin Out the Window",
+        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/Yo-Yo_Jumpin_Out_the_Window.mp3"
+      },
+      {
+        "title": "Baddie Philosophy",
+        "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/Baddie_Philosophy.mp3"
+      }
+    ],
+    "message": "These songs we're made with you in mind",
+    "contact": "warren@lambmusicworks.com",
+    "website": "https://lambmusicworks.com",
+    "active": true,
+    "expiry": null,
+    "createdAt": "2026-06-29T01:02:21.295Z",
+    "log": []
+  },
+  {
     "id": "sess_1781284905185",
     "name": "My Friend",
     "artist": "Zairey",
