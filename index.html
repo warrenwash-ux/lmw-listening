@@ -489,6 +489,22 @@ async function ghRead() {
   }
 }
 
+// Listener-side read: no token required or sent. Listeners only ever need
+// to READ session data (writes/logging now go through Supabase), so this
+// hits the public raw CDN directly. Sending an empty/missing token through
+// ghRead() above causes GitHub to reject with 401 Bad credentials instead
+// of falling back gracefully — which was silently breaking session loading
+// for any listener who'd never opened the admin dashboard on that device.
+async function ghReadPublic() {
+  try {
+    const r = await fetch(`https://raw.githubusercontent.com/${GH.repo}/${GH.branch}/${GH.file}?t=${Date.now()}`);
+    if (!r.ok) throw new Error("not ok");
+    return await r.json();
+  } catch(e) {
+    return JSON.parse(localStorage.getItem("lmw_sessions") || "[]");
+  }
+}
+
 async function ghWrite(data) {
   showSaving(true);
   GH.token = localStorage.getItem("lmw_gh_token") || GH.token;
@@ -559,7 +575,7 @@ window.addEventListener("load", async () => {
       const ct = document.getElementById("listener-content");
       ct.innerHTML = `<div class="status-screen"><div class="ss-icon">⏳</div><div class="ss-title">LOADING</div><div class="ss-body">Preparing your session...</div></div>`;
     }
-    sessions = await ghRead();
+    sessions = await ghReadPublic();
     localStorage.setItem("lmw_sessions", JSON.stringify(sessions));
     renderListener();
   }
