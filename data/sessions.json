@@ -15,7 +15,13 @@
     "active": true,
     "expiry": "2026-07-03T03:02",
     "createdAt": "2026-07-02T10:02:24.814Z",
-    "log": []
+    "log": [
+      {
+        "type": "open",
+        "ts": "2026-07-02T20:40:20.558Z",
+        "track": null
+      }
+    ]
   },
   {
     "id": "sess_1782694941295",
@@ -23,7 +29,7 @@
     "artist": "Warren Lamb",
     "tracks": [
       {
-        "title": "They Call Me YoYo But Tonight Iâm Yolanda",
+        "title": "They Call Me YoYo But Tonight IÃ¢ÂÂm Yolanda",
         "url": "https://raw.githubusercontent.com/warrenwash-ux/lmw-listening/main/audio/They_Call_Me_YoYo_But_Tonight_I_m_Yolanda.mp3"
       },
       {
