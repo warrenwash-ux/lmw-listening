@@ -442,6 +442,38 @@ const GH = {
 };
 let ghSha = null;
 
+// ═══════════════════════════════════════
+// SUPABASE — event logging (opens/plays/pauses)
+// Public-safe: insert-only for anon key via RLS, see setup SQL.
+// This replaces the old GitHub-based log array, which required a
+// write-capable token in every listener's browser and could silently
+// fail (breaking both tracking AND, on strict mobile browsers, delaying
+// audio.play() past its user-gesture window).
+// ═══════════════════════════════════════
+const SUPABASE_URL = "https://ptgatsxuexmudteqzxmc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_alnqpueV11-3S6RssaMYyg_7aeALCC4";
+
+let logsBySession = {};
+
+function getLog(id) { return logsBySession[id] || []; }
+
+async function fetchAllLogs() {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/session_logs?select=*&order=ts.desc`, {
+      headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await r.json();
+    const grouped = {};
+    (Array.isArray(rows) ? rows : []).forEach(e => {
+      if (!grouped[e.session_id]) grouped[e.session_id] = [];
+      grouped[e.session_id].push(e);
+    });
+    logsBySession = grouped;
+  } catch (e) {
+    // Keep whatever we had before; never let this break the dashboard
+  }
+}
+
 async function ghRead() {
   GH.token = localStorage.getItem("lmw_gh_token") || GH.token;
   try {
@@ -513,6 +545,7 @@ window.addEventListener("load", async () => {
     if (localStorage.getItem("lmw_admin_auth") === "true") {
       showPage("admin");
       sessions = await ghRead();
+      await fetchAllLogs();
       localStorage.setItem("lmw_sessions", JSON.stringify(sessions));
       renderSessionsList();
     } else {
@@ -535,13 +568,14 @@ window.addEventListener("load", async () => {
 function goAdmin() {
   if (localStorage.getItem("lmw_admin_auth") === "true") {
     showPage("admin");
-    ghRead().then(d => { sessions = d; renderSessionsList(); });
+    ghRead().then(async d => { sessions = d; await fetchAllLogs(); renderSessionsList(); });
   } else showPage("lock");
 }
 
 async function forceSyncFromGitHub() {
   showToast("Syncing...");
   sessions = await ghRead();
+  await fetchAllLogs();
   localStorage.setItem("lmw_sessions", JSON.stringify(sessions));
   renderSessionsList();
   showToast("Synced ✓");
@@ -562,7 +596,7 @@ function checkPin() {
       showPage("setup");
     } else {
       showPage("admin");
-      ghRead().then(d => { sessions = d; renderSessionsList(); });
+      ghRead().then(async d => { sessions = d; await fetchAllLogs(); renderSessionsList(); });
     }
   } else {
     document.getElementById("lockErr").style.display = "block";
@@ -576,7 +610,7 @@ function saveSetupToken() {
   localStorage.setItem("lmw_gh_token", t);
   GH.token = t;
   showPage("admin");
-  ghRead().then(d => { sessions = d; renderSessionsList(); });
+  ghRead().then(async d => { sessions = d; await fetchAllLogs(); renderSessionsList(); });
   showToast("Token saved ✓");
 }
 
@@ -685,8 +719,9 @@ function renderSessionsList() {
     return;
   }
   el.innerHTML = sessions.map(s => {
-    const opens = s.log.filter(e => e.type === "open").length;
-    const plays = s.log.filter(e => e.type === "play").length;
+    const sLog = getLog(s.id);
+    const opens = sLog.filter(e => e.type === "open").length;
+    const plays = sLog.filter(e => e.type === "play").length;
     const expired = s.expiry && new Date(s.expiry) < new Date();
     const st = !s.active ? "DISABLED" : expired ? "EXPIRED" : "ACTIVE";
     const bc = st === "ACTIVE" ? "b-green" : "b-red";
@@ -718,8 +753,9 @@ function renderDetail() {
   const s = getSess(selectedId); if (!s) return;
   const base = window.location.origin + window.location.pathname;
   document.getElementById("shareLink").textContent = `${base}?id=${s.id}`;
-  const plays = s.log.filter(e=>e.type==="play").length;
-  const opens = s.log.filter(e=>e.type==="open").length;
+  const dLog = getLog(s.id);
+  const plays = dLog.filter(e=>e.type==="play").length;
+  const opens = dLog.filter(e=>e.type==="open").length;
   document.getElementById("s-opens").textContent = opens;
   document.getElementById("s-plays").textContent = plays;
   document.getElementById("s-tracks").textContent = (s.tracks||[]).length;
@@ -733,11 +769,12 @@ function renderDetail() {
 
 function renderLog() {
   const s = getSess(selectedId);
-  if (!s || !s.log.length) {
+  const log = s ? getLog(s.id) : [];
+  if (!s || !log.length) {
     document.getElementById("activityLog").innerHTML = `<div class="empty" style="padding:12px 0;"><p>No activity yet. Send the link!</p></div>`;
     return;
   }
-  const rows = [...s.log].reverse().map(e => {
+  const rows = [...log].reverse().map(e => {
     const icon = e.type==="open"?"👁":e.type==="play"?"▶":"⏸";
     const label = e.type==="open"?"Opened":e.type==="play"?`Played Track ${e.track||1}`:"Paused";
     return `<tr><td>${icon}</td><td>${label}</td><td>${new Date(e.ts).toLocaleDateString()}</td><td>${new Date(e.ts).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}</td></tr>`;
@@ -838,11 +875,11 @@ function deleteSession(){if(selectedId)confirmDel(selectedId);}
 // ANALYTICS
 // ═══════════════════════════════════════
 function renderAnalytics(){
-  const tot=t=>sessions.reduce((a,s)=>a+s.log.filter(e=>e.type===t).length,0);
+  const tot=t=>sessions.reduce((a,s)=>a+getLog(s.id).filter(e=>e.type===t).length,0);
   document.getElementById("a-sessions").textContent=sessions.length;
   document.getElementById("a-opens").textContent=tot("open");
   document.getElementById("a-plays").textContent=tot("play");
-  const all=sessions.flatMap(s=>s.log.map(e=>({...e,listener:s.name}))).sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const all=sessions.flatMap(s=>getLog(s.id).map(e=>({...e,listener:s.name}))).sort((a,b)=>new Date(b.ts)-new Date(a.ts));
   if(!all.length){document.getElementById("allActivity").innerHTML=`<div class="empty"><div class="ei">📊</div><p>No activity yet.</p></div>`;return;}
   const rows=all.map(e=>{
     const icon=e.type==="open"?"👁":e.type==="play"?"▶":"⏸";
@@ -881,10 +918,19 @@ function copyLink(){
 // ═══════════════════════════════════════
 // LISTENER + PLAYLIST PLAYER
 // ═══════════════════════════════════════
-async function logEvent(type, trackNum) {
-  const s=getSess(sessionId);if(!s)return;
-  s.log.push({type,ts:new Date().toISOString(),track:trackNum||null});
-  await saveAll();
+function logEvent(type, trackNum) {
+  // Fire-and-forget: never awaited by playback code, so a slow or
+  // failed network call can't block or delay audio.play().
+  fetch(`${SUPABASE_URL}/rest/v1/session_logs`, {
+    method: "POST",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      "Prefer": "return=minimal"
+    },
+    body: JSON.stringify({ session_id: sessionId, type, track: trackNum || null })
+  }).catch(() => {});
 }
 
 function getState(){
@@ -1013,9 +1059,12 @@ function setupAudio(s, tracks) {
   }
 
   window.startPlaylist = async function() {
-    await logEvent("open");
     loadTrack(0);
     document.getElementById("loadMsg").style.display = "block";
+    // Logging happens in parallel, never awaited — audio.play() must run
+    // as close to the tap as possible or strict mobile browsers (iOS
+    // Safari especially) will block it as outside the user-gesture window.
+    logEvent("open");
     try {
       await audio.play();
       document.getElementById("loadMsg").style.display = "none";
@@ -1025,7 +1074,7 @@ function setupAudio(s, tracks) {
       isPlaying = true; hasStarted = true;
       playBtn.classList.add("playing");
       wv.classList.remove("paused");
-      await logEvent("play", 1);
+      logEvent("play", 1);
       updatePlaylistUI(tracks);
     } catch(e) {
       document.getElementById("loadMsg").style.display = "none";
